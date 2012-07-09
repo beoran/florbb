@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 package {
   import flash.display.Sprite;
   import flash.text.TextField;
+  import flash.text.TextFormat;
   import flash.text.TextFieldAutoSize;
   import flash.text.AntiAliasType;
   import flash.display.Bitmap;
@@ -66,6 +67,9 @@ package {
     public const DIR_LEFT     :int  = 4;
     public const MUSIC_X      :int  = 550;
     public const MUSIC_Y      :int  = 350;
+    public const RESET_X      :int  = MUSIC_X;
+    public const RESET_Y      :int  = MUSIC_Y + 30;
+    
     
     public var debug          :Boolean = false;
     public var levelIndex     :int     = 0;
@@ -99,7 +103,33 @@ package {
           0,0,0,0,0,0,0,0,0
         ]
       },
-      { name : "Keep going in the right way!",
+      { name : "Lozenge. Slightly more complicated!",
+        level: [
+          0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,
+          0,0,0,0,1,0,0,0,0,
+          0,0,0,1,1,1,0,0,0,
+          0,0,1,1,1,1,1,0,0,
+          0,0,0,1,1,1,0,0,0,
+          0,0,0,0,1,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0
+        ]
+      },
+      { name : "Block. You're getting the hang of it?",
+        level: [
+          0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,
+          0,0,1,1,1,1,1,0,0,
+          0,0,1,1,1,1,1,0,0,
+          0,0,1,1,1,1,1,0,0,
+          0,0,1,1,1,1,1,0,0,
+          0,0,1,1,1,1,1,0,0,
+          0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0
+        ]
+      },
+      { name : "Arrow. Keep going in the right way!",
         level: [
           0,0,0,0,0,0,0,0,0,
           0,0,0,0,0,0,0,0,0,
@@ -112,7 +142,7 @@ package {
           0,0,0,0,0,0,0,0,0
         ]
       },
-      { name : "Starred crossroads.",
+      { name : "Starred crossroads. A bit harder.",
         level: [
           0,0,0,0,1,0,0,0,0,
           0,0,0,1,1,1,0,0,0,
@@ -124,14 +154,71 @@ package {
           0,0,0,1,1,1,0,0,0,
           0,0,0,0,1,0,0,0,0
         ]
+      },
+      { name : "Loopy!",
+        level: [
+          1,1,1,1,1,0,0,0,0,
+          1,0,0,0,1,0,0,0,0,
+          1,0,0,0,1,0,0,0,0,
+          1,0,0,0,1,0,0,0,0,
+          1,1,1,1,1,1,1,1,1,
+          0,0,0,0,1,0,0,0,1,
+          0,0,0,0,1,0,0,0,1,
+          0,0,0,0,1,0,0,0,1,
+          0,0,0,0,1,1,1,1,1
+        ]
+      },
+      { name : "Heartfelt.",
+        level: [
+          0,0,0,0,0,0,0,0,0,
+          0,0,1,0,0,0,1,0,0,
+          0,1,1,1,1,1,1,1,0,
+          1,1,1,0,0,0,1,1,1,
+          1,1,0,0,0,0,0,1,1,
+          0,1,1,0,0,0,1,1,0,
+          0,0,1,1,0,1,1,0,0,
+          0,0,0,1,1,1,0,0,0,
+          0,0,0,0,1,0,0,0,0
+        ]
+      },
+      { name : "Ying and Yang.",
+        level: [
+          0,0,0,1,1,1,0,0,0,
+          0,0,1,1,1,1,1,0,0,
+          0,1,1,1,1,1,1,1,0,
+          1,2,2,2,1,1,1,1,1,
+          2,2,1,2,1,1,2,1,1,
+          2,2,2,2,1,1,1,1,1,
+          0,2,2,2,2,1,1,1,0,
+          0,0,2,2,2,2,2,0,0,
+          0,0,0,2,2,2,0,0,0
+        ]
+      },
+      { name : "Ultimate! The final Orbb!",
+        level: [
+          1,2,1,1,1,2,2,2,1,
+          2,1,2,1,2,1,1,1,2,
+          2,2,2,2,2,1,1,1,2,
+          1,2,1,1,1,2,2,2,1,
+          1,2,1,1,1,2,2,2,1,
+          1,1,1,1,1,2,1,2,1,
+          2,2,2,2,2,1,1,1,2,
+          1,2,1,1,1,1,2,1,1,
+          2,1,2,1,2,1,1,1,2
+        ]
       }
+      
     ];
   
     public var field:Array  = [];
+    // text formats
+    public var normalFormat:TextFormat  = new TextFormat();
+    public var winFormat:TextFormat     = new TextFormat();
     // text fields
     public var orbbText:TextField   = new TextField();
     public var levelText:TextField  = new TextField();
     public var musicText:TextField  = new TextField();
+    public var resetText:TextField  = new TextField();
     
     // handle for timeout
     public var timeout : *;
@@ -159,12 +246,15 @@ package {
     public var beepData:Class;            // code name for that filename
     [Embed(source="/embed/applause.mp3")] 
     public var applauseData:Class;
+    [Embed(source="/embed/reset.mp3")]
+    public var resetData:Class;    
     [Embed(source="/embed/music.mp3")] 
     public var musicData:Class;
     // load sounds and music
-    public var beep:Sound      = new beepData() as Sound;
-    public var music:Sound      = new musicData() as Sound;
-    public var applause:Sound   = new applauseData() as Sound;
+    public var beep:Sound         = new beepData() as Sound;
+    public var music:Sound        = new musicData() as Sound;
+    public var applause:Sound     = new applauseData() as Sound;
+    public var resetsound:Sound   = new resetData() as Sound;
     
     // channel for the music 
     public var musicChannel:SoundChannel  = null;
@@ -205,7 +295,7 @@ package {
     public function redrawLevel() : void {
       var xx:int;
       var yy:int;
-      levelText.text = level.name;
+      levelText.text = "Level " + levelIndex + ". " + level.name;
       for (yy = 0; yy < FIELD_HEIGHT; yy++)   {
         for(xx = 0; xx < FIELD_WIDTH; xx++)   {
           var orbbs:Object      = field[yy][xx];
@@ -226,6 +316,29 @@ package {
       level = clone(aid);
       redrawLevel();
       return level;
+    }
+    
+    // applies a default format to the text
+    public function formatText(text:TextField, xx:int, yy:int, 
+                               init:String, form:TextFormat) : void {
+      text.autoSize  = TextFieldAutoSize.LEFT;
+      text.antiAliasType = AntiAliasType.ADVANCED;
+      text.textColor = 0xFFFFFF;
+      text.text      = init;
+      text.x         = xx; 
+      text.y         = yy;
+      if(form != null) {
+        text.defaultTextFormat = form;
+      }
+    }
+    
+    // applies a button format to the text
+    public function buttonFormat(text:TextField, xx:int, yy:int, 
+                               init:String, form:TextFormat) : void {
+      formatText(text, xx, yy, init, form);
+      text.border    = true;
+      text.backgroundColor = 0x80000080;
+      text.background = true;
     }
 
     public function Florbb()
@@ -267,31 +380,24 @@ package {
         }
       }
       
-      loadLevelIndex(0);
+      normalFormat.size  = 16;
+      normalFormat.color = 0xFFFFFF;
       
-      orbbText.autoSize = TextFieldAutoSize.LEFT;
-      orbbText.antiAliasType = AntiAliasType.ADVANCED;
-      orbbText.textColor = 0xFFFFFF;
-      orbbText.text = "Welcome to Florbb! Copyright Bjorn De Meyer, 2012. Can be used freely under the ZLIB License.";
-     
+      
+      
+      formatText(orbbText, 0, 0, "Welcome to Florbb! Copyright Bjorn De Meyer, 2012. Orbb is free software under the ZLIB License.", normalFormat);
       addChild(orbbText);
       
-      levelText.autoSize = TextFieldAutoSize.LEFT;
-      levelText.antiAliasType = AntiAliasType.ADVANCED
-      levelText.y = 16;
-      levelText.x = 0;
-      levelText.textColor = 0xFFFFFF;
+      formatText(levelText, 0, 18, "Loading level!", normalFormat);
       addChild(levelText);
       
-      musicText.autoSize  = TextFieldAutoSize.LEFT;
-      musicText.antiAliasType = AntiAliasType.ADVANCED;
-      musicText.textColor = 0xFFFFFF;
-      musicText.text      = "Music ON";
-      musicText.border    = true;
-      musicText.x         = MUSIC_X; musicText.y = MUSIC_Y;
-      musicText.backgroundColor = 0x80000080;
-      musicText.background = true;
+      buttonFormat(musicText, MUSIC_X, MUSIC_Y, "Music ON", null);
       addChild(musicText);
+      
+      buttonFormat(resetText, RESET_X, RESET_Y, "Reset Level", null);
+      addChild(resetText);
+      
+      loadLevelIndex(0);
       
       
       stage.addEventListener(MouseEvent.CLICK, clickRespond);
@@ -334,6 +440,14 @@ package {
         loadLevelIndex(levelIndex);
       }
     }
+    
+    // resets the current level
+    public function resetLevel() : void {
+      levelText.text = "Reloading level!"
+      orbbText.text  = "Make all orbbs yellow!"
+      loadLevelIndex(levelIndex);
+    }
+
     
     // returns true if current level was won
     public function won() : Boolean {
@@ -410,6 +524,11 @@ package {
         return;
       }
       
+      if(overText(resetText, mouseX, mouseY)) { 
+        playSound(resetsound);
+        resetLevel();
+        return;
+      }
       
       // don't allow further play if already won.
       if (won()) return;
@@ -438,7 +557,9 @@ package {
 
     public function keyRespond(event:KeyboardEvent):void
     {
-      if(event.keyCode == 32) { // pressing spacebar?
+      if(event.keyCode == 32) { // press spacebar, level up cheat
+        orbbText.text = "Cheating!"
+        levelUp();
       }
       // ourExampleText.text = "Key code: " + event.keyCode;
     }
