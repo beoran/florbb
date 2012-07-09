@@ -289,6 +289,8 @@ package {
       musicText.text      = "Music ON";
       musicText.border    = true;
       musicText.x         = MUSIC_X; musicText.y = MUSIC_Y;
+      musicText.backgroundColor = 0x80000080;
+      musicText.background = true;
       addChild(musicText);
       
       
@@ -385,6 +387,15 @@ package {
       playRecurse(xx, yy - 1, DIR_UP);
       return true;
     }
+    
+    
+    public function overText(text : TextField, xx:int, yy:int) : Boolean {
+      if(text.x > xx) return false;
+      if(text.y > yy) return false;
+      if((text.x + text.width ) < xx) return false;
+      if((text.y + text.height) < yy) return false;
+      return true;
+    }
         
     public function clickRespond(e:MouseEvent):void
     {
@@ -393,7 +404,8 @@ package {
       var xoff:int = (stage.stageWidth  / 2) - ((32*FIELD_WIDTH)  / 2);
       var yoff:int = (stage.stageHeight / 2) - ((32*FIELD_HEIGHT) / 2);
       // if clicked in the corner toggle music
-      if((mouseX > MUSIC_X) && (mouseY > MUSIC_Y)) {
+      // if((mouseX > MUSIC_X) && (mouseY > MUSIC_Y)) {
+      if(overText(musicText, mouseX, mouseY)) { 
         toggleMusic();
         return;
       }
